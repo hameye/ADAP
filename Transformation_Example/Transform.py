@@ -82,7 +82,7 @@ class Transformation:
 
 ################################################################################################################################
 #--------------------------- Running the code - Achieving the transformation --------------------------
-TF = Transformation('ProjetLaboIn.txt','ProjetLaboOut.txt')
+TF = Transformation('Input.txt','Output.txt')
 TF.transform(type='Proj')
 TF.extract_mesures_final()
 

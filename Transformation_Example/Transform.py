@@ -45,17 +45,17 @@ class Transformation:
 		""" Return a dataframe of the points to transform from the input """
 		return self.Input_[self.Mesures_init_]
 
-	def transform(self,type=None):
+	def transform(self,type):
 		""" In our working cases the transformation should only be affine (Rotation,Translation and Shear).
 			But in general cases, the transformation could also have deformation and the transformation is 
 			a projection. 
 			See Mathematical definition of affine transformation and Projection (Homography) for more details. """
-		if type is None :
+		if type == 'Affine :
 			self.transformation_ = tf.AffineTransform()
 			self.transformation_.estimate(self.Repere_init_array_, self.Repere_final_array_)
 			self.Mesures_final_array_ = self.transformation_(self.Mesures_init_array_)
 
-		else:
+		if type == 'Proj':
 			self.transformation_ = tf.ProjectiveTransform()
 			self.transformation_.estimate(self.Repere_init_array_, self.Repere_final_array_)
 			self.Mesures_final_array_ = self.transformation_(self.Mesures_init_array_)

@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 from skimage import transform as tf
+import matplotlib.pyplot as plt
 ######################################################
 
 
@@ -17,8 +18,12 @@ class Transformation:
 		self.output_ = Output
 
 		#Create Dataframes from the textfiles
-		self.Input_ = pd.read_csv(Input)
-		self.Output_ = pd.read_csv(Output)
+		try :
+			self.Input_ = pd.read_csv(Input)
+			self.Output_ = pd.read_csv(Output)
+		except:
+			self.Input_ = pd.read_excel(Input,header=1)
+			self.Output_ = pd.read_excel(Output,header=1)
 		#Extract Landmarks from initial system
 		self.Repere_init_ = self.Input_[self.Input_['Type'].str.contains('Repere')]
 		#Create array of initial landmark values for transform calculations
@@ -83,7 +88,7 @@ class Transformation:
 		""" Write the calculated coordinates into the output textfile """
 		fd = open(self.output_,"a")
 		for i in range(self.Mesures_final_array_.shape[0]):
-	 		fd.write('{},{},{}\n'.format('Mesures'+str(i+1),self.Mesures_final_array_[i,0],self.Mesures_final_array_[i,1]))
+	 		fd.write('{},{},{}\n'.format('Mesure'+str(i+1),self.Mesures_final_array_[i,0],self.Mesures_final_array_[i,1]))
 		fd.close()
 
 
@@ -92,4 +97,5 @@ class Transformation:
 TF = Transformation('Input.txt','Output.txt')
 TF.transform(type='Proj')
 TF.extract_mesures_final()
+
 

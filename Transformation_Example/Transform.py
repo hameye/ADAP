@@ -59,7 +59,7 @@ class Transformation:
 		""" Return a dataframe of the points to transform from the input """
 		return self.Input_[self.Input_['Type'].str.contains('Mesure')]
 
-	def transform(self,type):
+	def transform(self,type='Proj'):
 		""" In our working cases the transformation should only be affine (Rotation,Translation and Shear).
 			But in general cases, the transformation could also have deformation and the transformation is 
 			a projection. 
@@ -95,7 +95,6 @@ class Transformation:
 ################################################################################################################################
 #--------------------------- Running the code - Achieving the transformation --------------------------
 TF = Transformation('Input.txt','Output.txt')
-TF.transform(type='Proj')
 TF.extract_mesures_final()
 
 

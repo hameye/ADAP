@@ -95,6 +95,7 @@ class Transformation:
 ################################################################################################################################
 #--------------------------- Running the code - Achieving the transformation --------------------------
 TF = Transformation('Input.txt','Output.txt')
+Tf.transform()
 TF.extract_mesures_final()
 
 

@@ -24,7 +24,7 @@ class Mask :
 
 
 
-	def __init__(self,prefix,suffix,table, Echelle = True, Normalisation = True):
+	def __init__(self,prefix,suffix,table, Echelle = False, Normalisation = True):
 
 		"""Initialization of the class.
 		Extraction of the suffix of the file in order to know how to treat it.
@@ -33,7 +33,6 @@ class Mask :
 			If so, values in the spreadsheet are specified between 0 and 1. 
 			If not, values in the spreadsheet are specified in number of counts in the spectrum.
 			If the file is an image, the normalization is automatic.
-		Verification if information of colors are required for the classification. Colors are also specified in the spreadsheet.
 		"""
 		self.prefix_ = prefix
 		self.suffix_ = suffix
@@ -42,6 +41,10 @@ class Mask :
 		self.table_name = table
 
 	def load_table(self):
+		""" Load the spreadsheet into the programm.
+		Verification if information of colors are required for the classification. Colors are also specified in the spreadsheet.
+		"""
+	
 		try:
 			self.table_ = pd.read_csv(self.table_name)
 		except:
@@ -239,6 +242,7 @@ class Mask :
 		Input is the index of the mineral in the 3D array (cube).
 		"""
 
+		indice = list(self.Minerals_.values()).index(str(indice))
 		fig = plt.figure()
 		plt.imshow(self.mineralcube_[:,:,indice])
 		plt.title(self.Minerals_[indice])
@@ -252,6 +256,7 @@ class Mask :
 		"""Function that saves the mineral mask wanted as a .tif file.
 		Input is the index of the mineral in the 3D array (cube).
 		"""
+		indice = list(self.Minerals_.values()).index(str(indice))
 		plt.imshow(self.mineralcube_[:,:,indice])
 		plt.title(self.Minerals_[indice])
 		plt.savefig('Mask_'+self.Minerals_[indice]+'.tif')
@@ -265,6 +270,7 @@ class Mask :
 		"""Function that plots the elemental map and the corresponding hitogram of intensity
 		Input is the index of the element in the 3D array
 		Useful function in order to set the threshold in the spreadsheet."""
+		indice = list(self.Elements_.values()).index(str(indice))
 		fig, axes = plt.subplots(1, 2, figsize=(10, 5))
 		ax = axes.ravel()
 		Anan=self.datacube_[:,:,indice][np.isfinite(self.datacube_[:,:,indice])]
@@ -325,8 +331,10 @@ class Mask :
 
 
 	def get_masked_element(self,element,mineral):
-		""" Function that allows to plot the elemental map and the histogram associated only in a specific mask.
+		""" Function that plots the elemental map and the histogram associated only in a specific mask.
 		"""
+		element = list(self.Elements_.values()).index(str(element))
+		mineral = list(self.Minerals_.values()).index(str(mineral))
 		fig, axes = plt.subplots(1, 2, figsize=(10, 5))
 		ax = axes.ravel()
 		Anan=self.datacube_[:,:,element][np.isfinite(self.datacube_[:,:,element])]
@@ -346,8 +354,9 @@ class Mask :
 
 	def cube_masking_keep(self,mineral):
 
-		"""Function that allows to recreate a raw datacube containing data only in the wanted mask.
+		"""Function that recreates a raw datacube containing data only in the wanted mask.
 		"""
+		mineral = list(self.Minerals_.values()).index(str(mineral))
 		cube = hs.load(self.prefix_[:-1]+".rpl", signal_type="EDS_SEM",lazy=True)
 		array = np.asarray(cube)
 		array[np.isnan(self.mineralcube_[:,:,mineral])]= 0
@@ -362,8 +371,9 @@ class Mask :
 
 	def cube_masking_remove(self,mineral):
 
-		"""Function that allows to recreate a raw datacube containing all the data without the mask not wanted.
+		"""Function that recreates a raw datacube containing all the data without the mask not wanted.
 		"""
+		mineral = list(self.Minerals_.values()).index(str(mineral))
 		cube = hs.load(self.prefix_[:-1]+".rpl", signal_type="EDS_SEM",lazy=True)
 		array = np.asarray(cube)
 		array[np.isfinite(self.mineralcube_[:,:,mineral])]= 0

@@ -4,7 +4,11 @@ import pandas as pd
 from skimage import transform as tf
 import matplotlib.pyplot as plt
 ######################################################
-Author : Hadrien Meyer - ENSG Nancy
+__author__ = "Hadrien Meyer"
+__organization__ = "ENSG Nancy"
+__email__ = "meyerhadrien96@gmail.com"
+__date__ = "March, 2020"
+
 
 class Transformation:
 	""" Class that allows to compute the transformation of coordinates given some landmarks between two systems."""
@@ -61,8 +65,8 @@ class Transformation:
 
 	def transform(self,type='Proj'):
 		""" In our working cases the transformation should only be affine (Rotation,Translation and Shear).
-			But in general cases, the transformation could also have deformation and the transformation is 
-			a projection. 
+			But in general cases, the transformation could also have deformation and the transformation is
+			a projection.
 			See Mathematical definition of affine transformation and Projection (Homography) for more details. """
 		if type == 'Affine' :
 			self.transformation_ = tf.AffineTransform()
@@ -98,5 +102,3 @@ class Transformation:
 TF = Transformation('Input.txt','Output.txt')
 Tf.transform()
 TF.extract_mesures_final()
-
-

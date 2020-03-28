@@ -9,6 +9,10 @@ import matplotlib.patches as mpatches
 import hyperspy.api as hs
 from matplotlib.colors import ListedColormap, LinearSegmentedColormap
 ######################################################
+__author__ = "Hadrien Meyer"
+__organization__ = "ENSG Nancy"
+__email__ = "meyerhadrien96@gmail.com"
+__date__ = "March, 2020"
 
 plt.rcParams['image.cmap'] = 'cividis'
 
@@ -16,7 +20,7 @@ plt.rcParams['image.cmap'] = 'cividis'
 class Mask :
 
 	"""Class that allows to do a mineralogical classification of a sample provided the elemental data and a spreadsheet containing the elemental information needed for each mineral.
-	The classification indicates the minerals, the percentage of each, the percentage of pixels that are classified more than once. 
+	The classification indicates the minerals, the percentage of each, the percentage of pixels that are classified more than once.
 	It also indicates the percentage of the number of pixel that are not indexed.
 	It also enables to extract a binaray image per mineral in order to use it as a mask onto the datacube (.rpl file) to facilitate quantitative analysis by the software.
 
@@ -28,9 +32,9 @@ class Mask :
 
 		"""Initialization of the class.
 		Extraction of the suffix of the file in order to know how to treat it.
-		Indication of the presence of a scalebar if the file is an image. 
-		Indication of the will to have normalized information of the element :intensity between 0 and 100. 
-			If so, values in the spreadsheet are specified between 0 and 1. 
+		Indication of the presence of a scalebar if the file is an image.
+		Indication of the will to have normalized information of the element :intensity between 0 and 100.
+			If so, values in the spreadsheet are specified between 0 and 1.
 			If not, values in the spreadsheet are specified in number of counts in the spectrum.
 			If the file is an image, the normalization is automatic.
 		"""
@@ -44,7 +48,7 @@ class Mask :
 		""" Load the spreadsheet into the programm.
 		Verification if information of colors are required for the classification. Colors are also specified in the spreadsheet.
 		"""
-	
+
 		try:
 			self.table_ = pd.read_csv(self.table_name)
 		except:
@@ -66,9 +70,9 @@ class Mask :
 		""" Function that creates a 3D array (X and Y are the dimensions of the sample and Z dimension is the number of elements/emission lines taken into account for the classification)
 		It stacks the information contained in the elemental files given ranked according to the spreasheet ranking.
 		If the normalization is asked or if the elemental map is an image, the data in the array are between 0 and 100.
-		If there is a scalebar, the corresponding pixels are non assigned. 
+		If there is a scalebar, the corresponding pixels are non assigned.
 
-		Three types of elemental files are accepted : 
+		Three types of elemental files are accepted :
 		- Imges (.bmp of .tif), which are RGB files : each pixel contains 3 values between 0 and 255. The rgb is put into greyscale calculated by the norm 2.
 		- Textfile (.txt), which is already the elemental array where the values are the number of counts
 		- Raw file (.rpl), wich is the datacube containing all the spectra for every pixel. The hyperspy library is used to extract the emission lines corresponding to the wanted elements.
@@ -82,7 +86,7 @@ class Mask :
 
 
 
-		if self.suffix_ == '.bmp' or self.suffix_ == '.tif': 
+		if self.suffix_ == '.bmp' or self.suffix_ == '.tif':
 			self.Elements_ = {}
 			test = np.linalg.norm(imread(self.prefix_+self.table_.iloc[0][0]+self.suffix_),axis=2)
 			self.datacube_ = np.zeros((test.shape[0],test.shape[1],self.table_.shape[0]))
@@ -95,19 +99,19 @@ class Mask :
 					self.datacube_[:,:,element] = np.linalg.norm(imread(self.prefix_+self.table_.iloc[element][0]+self.suffix_),axis=2)#/np.max(np.linalg.norm(imread(self.prefix_+self.table_.iloc[element][0]+self.suffix_),axis=2))*100
 					if self.echelle_ == True :
 						test +=self.datacube_[:,:,element]
-				else : 
+				else :
 					image_over = imread(self.prefix_+self.table_['Element'][element].split('/')[0]+self.suffix_)
 					image_under = imread(self.prefix_+self.table_['Element'][element].split('/')[1]+self.suffix_)
 					image_over_grey = np.linalg.norm(image_over,axis=2)
 					image_under_grey = np.linalg.norm(image_under,axis=2)
 					image_under_grey[image_under_grey==0.]=0.01
 					self.datacube_[:,:,element] = image_over_grey/image_under_grey
-			        
+
 			if self.echelle_ == True :
-				for i in range(len(self.Elements_)): 
+				for i in range(len(self.Elements_)):
 					self.datacube_[:,:,i][test>3000]=np.nan
 
-			for i in range(len(self.Elements_)): 
+			for i in range(len(self.Elements_)):
 					self.datacube_[:,:,i] = self.datacube_[:,:,i]/np.nanmax(self.datacube_[:,:,i])*100
 
 
@@ -126,7 +130,7 @@ class Mask :
 					self.datacube_[:,:,element] = np.loadtxt(self.prefix_+self.table_.iloc[element][0]+self.suffix_,delimiter=';')#/np.max(np.linalg.norm(np.load(self.prefix_+self.table_.iloc[element][0]+self.suffix_),axis=2))*100
 					if self.echelle_ == True :
 						test +=self.datacube_[:,:,element]
-				else : 
+				else :
 					image_over_grey = np.loadtxt(self.prefix_+self.table_['Element'][element].split('/')[0]+self.suffix_,delimiter=';')
 					image_under_grey = np.loadtxt(self.prefix_+self.table_['Element'][element].split('/')[1]+self.suffix_,delimiter=';')
 
@@ -134,13 +138,13 @@ class Mask :
 
 
 			if self.Normalisation_ == True :
-				for i in range(len(self.Elements_)): 
+				for i in range(len(self.Elements_)):
 					self.datacube_[:,:,i] = self.datacube_[:,:,i]/np.nanmax(self.datacube_[:,:,i])*100
 
 
 
 
-		if self.suffix_ == '.rpl' : 
+		if self.suffix_ == '.rpl' :
 			cube = hs.load(self.prefix_[:-1]+".rpl", signal_type="EDS_SEM",lazy=True)
 			cube.axes_manager[-1].name = 'E'
 			cube.axes_manager['E'].units = 'keV'
@@ -162,8 +166,8 @@ class Mask :
 
 					if self.echelle_ == True :
 						test +=self.datacube_[:,:,element]
-				
-				else : 
+
+				else :
 					image_over = imread(self.prefix_+self.table_['Element'][element].split('/')[0]+self.suffix_)
 					image_under = imread(self.prefix_+self.table_['Element'][element].split('/')[1]+self.suffix_)
 					image_over_grey = np.linalg.norm(image_over,axis=2)
@@ -173,7 +177,7 @@ class Mask :
 
 
 			if self.Normalisation_ == True :
-				for i in range(len(self.Elements_)): 
+				for i in range(len(self.Elements_)):
 					self.datacube_[:,:,i] = self.datacube_[:,:,i]/np.nanmax(self.datacube_[:,:,i])*100
 
 
@@ -183,16 +187,16 @@ class Mask :
 
 		"""Function that creates a 3D numpy array (X and Y are the dimensions of the sample and Z dimension is the number of minerals wanted for the classification).
 		The minerals are defined by the columns in the spreadsheet. The 2D array create per mineral depends on the threshold specified in the spreadsheet.
-		If one value is given, it corresponds to the minimum threshold to be in the mineral. 
+		If one value is given, it corresponds to the minimum threshold to be in the mineral.
 		If two values separated by a dash, it corresponds to the range of values for this element to be in the mineral.
 		Given values are outside the range.
-		
-		Each mineral array is binary with 1 where the pixel is in the mineral and NaN (non assigned) where the pixel is not in the mineral. 
+
+		Each mineral array is binary with 1 where the pixel is in the mineral and NaN (non assigned) where the pixel is not in the mineral.
 
 		The function also creates a dictionnary containing the Z position of the minerals in the 3D array created.
 
 		2 class files created in that function.
-		
+
 		"""
 
 		self.Minerals_ = {}
@@ -208,7 +212,7 @@ class Mask :
 			for k in range(index_str.shape[0]):
 				mask_i_str[:,:,k] = self.datacube_[:,:,index_str[k]]
 
-				if len(str_table[index_str[k]].split('-')) == 1 : 
+				if len(str_table[index_str[k]].split('-')) == 1 :
 					threshold_min = float(str_table[index_str[k]].split('-')[0])
 					threshold_max = None
 
@@ -216,18 +220,18 @@ class Mask :
 					threshold_min = float(str_table[index_str[k]].split('-')[0])
 					threshold_max = float(str_table[index_str[k]].split('-')[1])
 
-				
+
 				if self.Normalisation_ == True :
 					mask_i_str[:,:,k][mask_i_str[:,:,k]<threshold_min*np.nanmax(mask_i_str[:,:,k])]=np.nan
 					if threshold_max:
 						mask_i_str[:,:,k][mask_i_str[:,:,k]>threshold_max*np.nanmax(mask_i_str[:,:,k])]=np.nan
-					
+
 					mask_i_str[np.isfinite(mask_i_str)]=1
 				else:
 					mask_i_str[:,:,k][mask_i_str[:,:,k]<threshold_min]=np.nan
 					if threshold_max :
 						mask_i_str[:,:,k][mask_i_str[:,:,k]>threshold_max]=np.nan
-					
+
 					mask_i_str[np.isfinite(mask_i_str)]=1
 
 			mask_i_str = np.nansum(mask_i_str,axis=2)
@@ -303,19 +307,19 @@ class Mask :
 		values = np.unique(arrray.ravel())
 		#values = np.arange(len(proportion)+1)
 		colors = [im.cmap(im.norm(value)) for value in values]
-		
+
 		try:
 			for value in self.Couleurs_:
 				colors[value] = self.Couleurs_[value]
-		except : 
-			pass 
-		
+		except :
+			pass
+
 		self.newcmp = ListedColormap(colors)
 		plt.close()
 		fig = plt.figure()
 		im = plt.imshow(array,cmap = self.newcmp)
 		# create a patch (proxy artist) for every color
-		if np.nanmax(array)>len(self.Minerals_): 
+		if np.nanmax(array)>len(self.Minerals_):
 			patches = [mpatches.Patch(color=colors[np.where(values == int(i))[0][0]], label="{} : {} %".format(self.Minerals_[int(i)],str(round(proportion[int(i)],2)))) for i in values[:-1] if round(proportion[int(i)],2)>0]
 			patches.append(mpatches.Patch(color=colors[-1], label="{} : {} %".format('Mixtes',str(round(np.where(array==np.nanmax(array))[0].shape[0] / np.sum(np.isfinite(array))*100,2)))))
 		else :
@@ -384,6 +388,3 @@ class Mask :
 		output.write(f.read())
 		f.close()
 		output.close()
-
-
-

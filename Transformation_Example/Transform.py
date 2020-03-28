@@ -4,7 +4,7 @@ import pandas as pd
 from skimage import transform as tf
 import matplotlib.pyplot as plt
 ######################################################
-
+Author : Hadrien Meyer - ENSG Nancy
 
 class Transformation:
 	""" Class that allows to compute the transformation of coordinates given some landmarks between two systems."""

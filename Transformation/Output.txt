@@ -1,5 +1,0 @@
-Type,X,Y
-Repere,155,15
-Repere,65,40
-Repere,260,130
-Repere,360,95

@@ -9,3 +9,4 @@ Procedure that allows to :
   locations of the Points of Interest on each tool -> Transform
   See https://github.com/hameye/findcoord
 - Create Mask in order to highlight Region of Interest depending on the query (heavy/light mineral, sulfides/sulfates, etc...)
+  See https://github.com/hameye/marcia
